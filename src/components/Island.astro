@@ -1,0 +1,463 @@
+---
+// The page's floating nav. One element with three looks:
+//  - "bar"    (desktop, top of page): sits exactly over the Lock Screen nav
+//             pill and looks identical to it — Work / Experience / About.
+//  - "island" (after scrolling): springs into a compact Dynamic Island pill
+//             with the current section; hover / focus / tap expands it into
+//             the section links. On mobile it grows out of a dot and a tap
+//             opens a menu card.
+// Mode, widths, active section and open state are driven by scripts/motion.ts.
+import Icon from './ui/Icon.astro';
+import { mailto } from '../data/portfolio';
+
+const sections = [
+  { id: 'glance', label: 'Home', icon: 'house' },
+  { id: 'work', label: 'Work', icon: 'layout-grid' },
+  { id: 'experience', label: 'Experience', icon: 'briefcase' },
+  { id: 'about', label: 'About', icon: 'user-round' },
+];
+const barLinks = sections.slice(1);
+---
+
+<div class="island-wrap" data-island data-mode="bar">
+  <div class="island" data-open="false">
+    <!-- Bar look: mirrors the Lock Screen nav pill -->
+    <nav aria-label="Primary" class="island-bar" data-island-bar>
+      {
+        barLinks.map((s, i) => (
+          <a href={`#${s.id}`} class="island-bar-link" style={`--n:${i}`}>
+            {s.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <!-- Island look: collapsed head -->
+    <button
+      type="button"
+      class="island-head"
+      aria-expanded="false"
+      aria-controls="island-menu"
+      aria-label="Sections menu"
+      data-island-toggle
+      inert
+    >
+      <span class="island-dot" aria-hidden="true"></span>
+      <span class="island-label-track" aria-hidden="true"><span class="island-label" data-island-label>Home</span></span>
+      <Icon name="chevron-down" size={16} class="island-chevron" />
+    </button>
+
+    <!-- Island look, desktop: expanded links -->
+    <nav aria-label="Sections" class="island-nav" data-island-nav inert>
+      <span class="island-hl" aria-hidden="true"></span>
+      {
+        sections.map((s, i) => (
+          <a href={`#${s.id}`} class="island-link" style={`--n:${i}`} data-island-link={s.id}>
+            {s.label}
+          </a>
+        ))
+      }
+    </nav>
+
+  </div>
+
+<!-- Mobile: menu card, opens upward from the bottom-right pill -->
+  <div id="island-menu" class="island-menu" inert>
+    <div class="island-menu-inner">
+      <ul class="flex flex-col gap-0.5">
+        {
+          sections.map((s, i) => (
+            <li style={`--n:${i}`}>
+              <a href={`#${s.id}`} class="island-menu-link" data-island-link={s.id}>
+                <Icon name={s.icon} size={18} class="text-os-text-2" />
+                <span class="flex-1">{s.label}</span>
+                <span class="island-menu-current" aria-hidden="true"></span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a href={mailto()} class="btn btn-solid press island-menu-cta" style="--n:4">
+        <Icon name="mail" size={16} /> Email me
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .island-wrap {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    /* Tracks the page in "bar" mode, so it is updated per frame (no transition). */
+    translate: 0 var(--y, 12px);
+  }
+  :global(html:not(.js)) .island-wrap {
+    display: none;
+  }
+
+  .island {
+    --ih: 48px;
+    position: relative;
+    pointer-events: auto;
+    width: var(--cw, 120px);
+    min-height: var(--ih);
+    border-radius: 999px;
+    background: var(--island);
+    border: 1px solid var(--nav-stroke);
+    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+    backdrop-filter: blur(24px) saturate(1.6);
+    box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+    overflow: hidden;
+    transition:
+      width 0.6s var(--spring),
+      height 0.6s var(--spring),
+      min-height 0.6s var(--spring),
+      border-radius 0.5s var(--spring),
+      background-color 0.4s ease,
+      box-shadow 0.4s ease,
+      opacity 0.3s ease,
+      scale 0.6s var(--spring),
+      filter 0.4s ease;
+  }
+
+  /* Shared layer behaviour: one visible at a time, cross-fading with blur. */
+  .island-bar,
+  .island-head,
+  .island-nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    transition:
+      opacity 0.25s ease,
+      filter 0.35s ease,
+      scale 0.5s var(--spring);
+  }
+
+  /* ---------------- Bar look (desktop, top of page) */
+  .island-bar {
+    gap: 6px;
+    padding: 0 4px;
+    width: max-content;
+  }
+  .island-bar-link {
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--os-text-2);
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      scale 0.45s var(--spring);
+  }
+  .island-bar-link:hover {
+    background: var(--ghost);
+    color: var(--os-text);
+  }
+  .island-bar-link:active {
+    scale: 0.97;
+  }
+
+  [data-mode='bar'] .island {
+    width: var(--bw, 257px);
+    height: var(--bh, 39px);
+    min-height: 0;
+    background: var(--nav);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    box-shadow: none;
+  }
+  [data-mode='island'] .island-bar,
+  [data-mode='bar'] .island-head,
+  [data-mode='bar'] .island-nav {
+    opacity: 0;
+    filter: blur(6px);
+    scale: 0.92;
+    pointer-events: none;
+  }
+
+  /* ---------------- Island look: collapsed head */
+  .island-head {
+    height: calc(var(--ih) - 2px);
+    gap: 8px;
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--os-text);
+  }
+  .island-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #ff9f0a;
+    box-shadow: 0 0 0 3px rgb(255 159 10 / 0.25);
+    flex-shrink: 0;
+  }
+  .island-label-track {
+    display: inline-block;
+    width: var(--w, auto);
+    height: 20px;
+    overflow: hidden;
+    transition: width 0.45s var(--spring);
+  }
+  .island-label {
+    display: inline-block;
+    line-height: 20px;
+    white-space: nowrap;
+  }
+  .island-head :global(.island-chevron) {
+    color: var(--os-text-3);
+    transition: rotate 0.35s var(--spring);
+  }
+
+  /* ---------------- Desktop */
+  .island-nav {
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .island {
+      height: var(--ih);
+    }
+    .island-head :global(.island-chevron) {
+      display: none;
+    }
+    .island-nav {
+      display: flex;
+      gap: 2px;
+      height: calc(var(--ih) - 2px);
+      padding: 0 4px;
+      width: max-content;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .island-link {
+      position: relative;
+      z-index: 1;
+      padding: 9px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--os-text-2);
+      opacity: 0;
+      translate: 0 6px;
+      filter: blur(3px);
+      transition:
+        color 0.25s ease,
+        opacity 0.25s ease,
+        translate 0.45s var(--spring),
+        filter 0.3s ease;
+    }
+    .island-link:hover {
+      color: var(--os-text);
+    }
+    .island-link[aria-current='true'] {
+      color: var(--on-solid);
+    }
+    .island-hl {
+      position: absolute;
+      top: 4px;
+      left: 0;
+      width: var(--hl-w, 0);
+      height: calc(100% - 8px);
+      border-radius: 999px;
+      background: var(--solid);
+      translate: var(--hl-x, 0) 0;
+      opacity: 0;
+      transition:
+        translate 0.5s var(--spring),
+        width 0.5s var(--spring),
+        opacity 0.2s ease;
+    }
+
+    [data-mode='island'] .island:is(:hover, :focus-within, [data-open='true']) {
+      width: var(--ew, auto);
+      box-shadow: 0 14px 40px rgb(0 0 0 / 0.3);
+    }
+    [data-mode='island'] .island:is(:hover, :focus-within, [data-open='true']) .island-head {
+      opacity: 0;
+      filter: blur(6px);
+      scale: 0.9;
+      pointer-events: none;
+    }
+    [data-mode='island'] .island:is(:hover, :focus-within, [data-open='true']) .island-nav {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    [data-mode='island'] .island:is(:hover, :focus-within, [data-open='true']) .island-link {
+      opacity: 1;
+      translate: 0 0;
+      filter: none;
+      transition-delay: 0s, calc(60ms + var(--n) * 35ms), calc(60ms + var(--n) * 35ms), calc(60ms + var(--n) * 35ms);
+    }
+    [data-mode='island'] .island:is(:hover, :focus-within, [data-open='true']) .island-hl {
+      opacity: 1;
+      transition-delay: 0s, 0s, 0.12s;
+    }
+    .island-menu {
+      display: none;
+    }
+  }
+
+  /* ---------------- Mobile: bottom-right floating pill + upward menu card.
+     Only transform and opacity animate here (no width morph, no filter) so
+     it stays smooth on phones. */
+  @media (max-width: 767.98px) {
+    .island-wrap {
+      inset: auto max(16px, env(safe-area-inset-right)) max(16px, calc(env(safe-area-inset-bottom) + 10px)) auto;
+      justify-content: flex-end;
+      translate: none;
+      transform-origin: bottom right;
+      transition:
+        opacity 0.25s ease,
+        scale 0.5s var(--spring);
+    }
+    .island-wrap[data-mode='bar'] {
+      opacity: 0;
+      scale: 0.6;
+      pointer-events: none;
+    }
+    .island-wrap[data-mode='bar'] * {
+      pointer-events: none;
+    }
+    .island-bar {
+      display: none;
+    }
+    .island,
+    [data-mode='bar'] .island {
+      width: auto;
+      height: auto;
+      min-height: var(--ih);
+      background: var(--island);
+      -webkit-backdrop-filter: blur(24px) saturate(1.6);
+      backdrop-filter: blur(24px) saturate(1.6);
+      box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+      transition:
+        scale 0.45s var(--spring),
+        box-shadow 0.3s ease;
+    }
+    .island-head,
+    [data-mode] .island-head {
+      position: relative;
+      height: 46px;
+      padding: 0 14px 0 16px;
+      opacity: 1;
+      filter: none;
+      scale: 1;
+      transition: none;
+    }
+    .island-head :global(.island-chevron) {
+      rotate: 180deg;
+    }
+    [data-open='true'] .island-head :global(.island-chevron) {
+      rotate: 0deg;
+    }
+    .island-head:active {
+      scale: 0.96;
+    }
+
+    .island-menu {
+      position: absolute;
+      right: 0;
+      bottom: calc(100% + 10px);
+      width: min(280px, calc(100vw - 32px));
+      border-radius: 24px;
+      background: var(--island);
+      border: 1px solid var(--nav-stroke);
+      -webkit-backdrop-filter: blur(24px) saturate(1.6);
+      backdrop-filter: blur(24px) saturate(1.6);
+      box-shadow: 0 18px 50px rgb(0 0 0 / 0.35);
+      transform-origin: bottom right;
+      opacity: 0;
+      scale: 0.9;
+      translate: 0 8px;
+      visibility: hidden;
+      pointer-events: none;
+      transition:
+        opacity 0.2s ease,
+        scale 0.45s var(--spring),
+        translate 0.45s var(--spring),
+        visibility 0s linear 0.45s;
+    }
+    [data-open='true'] .island-menu {
+      opacity: 1;
+      scale: 1;
+      translate: 0 0;
+      visibility: visible;
+      pointer-events: auto;
+      transition:
+        opacity 0.2s ease,
+        scale 0.45s var(--spring),
+        translate 0.45s var(--spring),
+        visibility 0s;
+    }
+    .island-menu-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 8px;
+    }
+    .island-menu li,
+    .island-menu-cta {
+      opacity: 0;
+      translate: 0 6px;
+      transition:
+        opacity 0.2s ease,
+        translate 0.35s var(--spring);
+    }
+    [data-open='true'] :is(.island-menu li, .island-menu-cta) {
+      opacity: 1;
+      translate: 0 0;
+      transition-delay: calc(40ms + var(--n) * 30ms);
+    }
+  }
+
+  .island-menu-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 44px;
+    padding: 0 12px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--os-text);
+    transition: background-color 0.2s ease;
+  }
+  .island-menu-link:active,
+  .island-menu-link[aria-current='true'] {
+    background: var(--menu-active);
+  }
+  .island-menu-current {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: #ff9f0a;
+    opacity: 0;
+  }
+  .island-menu-link[aria-current='true'] .island-menu-current {
+    opacity: 1;
+  }
+  .island-menu-cta {
+    height: 44px;
+    width: 100%;
+    font-size: 15px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .island-wrap,
+    .island,
+    .island *,
+    .island-menu {
+      transition-duration: 0.01ms !important;
+      transition-delay: 0s !important;
+    }
+  }
+</style>

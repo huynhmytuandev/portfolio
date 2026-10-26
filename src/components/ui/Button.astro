@@ -1,0 +1,51 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+import Icon from './Icon.astro';
+
+interface Props extends Omit<HTMLAttributes<'a'>, 'class'> {
+  href: string;
+  variant?: 'solid' | 'ghost' | 'ghost-2' | 'lime';
+  size?: 'nav' | 'sm' | 'md' | 'lg';
+  icon?: string;
+  iconEnd?: string;
+  external?: boolean;
+  class?: string;
+}
+
+const {
+  href,
+  variant = 'solid',
+  size = 'md',
+  icon,
+  iconEnd,
+  external = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const sizes = {
+  nav: 'px-3.5 py-2 text-[13px] md:px-4 md:py-[9px] md:text-sm',
+  sm: 'px-4 py-[9px] text-sm',
+  md: 'px-[18px] py-3 text-sm',
+  lg: 'px-[22px] py-[14px] text-[15px]',
+};
+const variants = {
+  solid: 'btn-solid',
+  ghost: 'btn-ghost',
+  'ghost-2': 'btn-ghost-2',
+  lime: 'bg-[#D4F21F] text-[#0B0B0B]',
+};
+---
+
+<a
+  href={href}
+  class:list={['btn press', sizes[size], variants[variant], className]}
+  {...external ? { target: '_blank', rel: 'noopener noreferrer' } : {}}
+  {...rest}
+>
+  {icon && <Icon name={icon} />}
+  <slot />
+  {iconEnd && <Icon name={iconEnd} />}
+  {external && <span class="sr-only">(opens in a new tab)</span>}
+</a>

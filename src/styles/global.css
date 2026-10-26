@@ -1,1 +1,315 @@
 @import "tailwindcss";
+@import "./motion.css";
+
+/* Light theme: an explicit choice ([data-theme="light"]) or the system
+   preference when the visitor hasn't forced dark. Set before first paint by
+   the inline script in Layout.astro; toggled by the theme switcher. */
+@custom-variant light {
+  &:where([data-theme="light"], [data-theme="light"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: light) {
+    &:where(:not([data-theme="dark"]), :not([data-theme="dark"]) *) {
+      @slot;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Design tokens — ported from the "Portfolio v3 — TuanOS" Pencil variables.
+   Dark is the default; see the `light` variant above for when light applies.
+--------------------------------------------------------------------------- */
+:root {
+  color-scheme: dark;
+
+  --os-bg: #0a0b10;
+  --sec: #0a0b14;
+  --sec-2: #07080c;
+  --os-text: #ffffff;
+  --os-text-2: rgb(255 255 255 / 0.7);
+  --os-text-3: rgb(255 255 255 / 0.48);
+
+  --glass: rgb(255 255 255 / 0.12);
+  --glass-stroke: rgb(255 255 255 / 0.1);
+  --glass-blur: blur(30px);
+  --card: #111219;
+  --card-feli: #111219;
+  --hair: rgb(255 255 255 / 0.08);
+  --hair-2: rgb(255 255 255 / 0.15);
+  --chip: rgb(255 255 255 / 0.05);
+  --chip-stroke: rgb(255 255 255 / 0.09);
+  --note: rgb(255 255 255 / 0.04);
+
+  --solid: #ffffff;
+  --on-solid: #0a0b10;
+  --ghost: rgb(255 255 255 / 0.1);
+  --ghost-stroke: rgb(255 255 255 / 0.2);
+  --ghost-2: rgb(255 255 255 / 0.05);
+  --nav: rgb(255 255 255 / 0.08);
+  --nav-stroke: rgb(255 255 255 / 0.12);
+  --wordmark: rgb(255 255 255 / 0.94);
+
+  --blue: #6ea0ff;
+  --blue-line: #3a7bf2;
+  --cyan: #5ac8fa;
+  --now: #ff9f0a;
+  --now-bg: rgb(255 159 10 / 0.15);
+  --dot: #111219;
+  --dot-stroke: rgb(255 255 255 / 0.3);
+  --rail: rgb(255 255 255 / 0.1);
+  --award-bg: rgb(255 214 10 / 0.08);
+  --award-stroke: rgb(255 214 10 / 0.2);
+  --award-icon: #ffd60a;
+  --award-text: #ffe58a;
+  --phone-stroke: rgb(255 255 255 / 0.15);
+  --phone-shadow: 0 24px 48px rgb(0 0 0 / 0.6);
+  --island: rgb(10 11 16 / 0.72);
+  --tile-icon: rgb(255 255 255 / 0.05);
+  --spot: rgb(255 255 255 / 0.07);
+  --menu-active: rgb(255 255 255 / 0.1);
+  --toggle: rgb(255 255 255 / 0.08);
+  --toggle-active: rgb(255 255 255 / 0.16);
+  --toggle-active-stroke: transparent;
+
+  --bg-lock:
+    radial-gradient(55% 45% at 50% 62%, #c9684e 0%, rgb(90 52 128 / 0.69) 40%, transparent 100%),
+    radial-gradient(45% 40% at 12% 10%, rgb(43 59 154 / 0.65), transparent 100%),
+    #0a0b14;
+  --bg-home:
+    radial-gradient(45% 40% at 85% 35%, rgb(31 107 106 / 0.63), transparent 100%),
+    radial-gradient(40% 35% at 10% 80%, rgb(58 42 122 / 0.6), transparent 100%),
+    #0a0b14;
+  --bg-settings: radial-gradient(60% 35% at 50% 100%, rgb(201 104 78 / 0.35), transparent 100%), #0a0b14;
+  --bg-feli: radial-gradient(65% 60% at 78% 100%, rgb(212 242 31 / 0.18), transparent 100%);
+  --bg-gov: radial-gradient(70% 55% at 20% 100%, rgb(58 123 242 / 0.19), transparent 100%);
+  --bg-quick: radial-gradient(70% 55% at 50% 100%, rgb(79 163 255 / 0.18), transparent 100%);
+  --bg-cta:
+    radial-gradient(45% 60% at 92% 5%, rgb(201 104 78 / 0.25), transparent 100%),
+    radial-gradient(40% 45% at 0% 100%, rgb(39 71 245 / 0.15), transparent 100%);
+
+  /* Motion */
+  --spring: linear(0, 0.006, 0.025 2.8%, 0.101 6.1%, 0.539 18.9%, 0.721 25.3%, 0.849 31.5%,
+      0.937 38.1%, 0.968 41.8%, 0.991 45.7%, 1.006 50.1%, 1.015 55%, 1.017 63.9%,
+      1.001 85.9%, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --island-h: 52px;
+}
+
+:root {
+  @variant light {
+    color-scheme: light;
+
+    --os-bg: #ececef;
+    --sec: #ececef;
+    --sec-2: #e6e6ea;
+    --os-text: #0e0f12;
+    --os-text-2: #45474f;
+    --os-text-3: #5f626b;
+
+    --glass: #f6f6f8;
+    --glass-stroke: rgb(14 15 18 / 0.08);
+    --glass-blur: none;
+    --card: #f6f6f8;
+    --card-feli: #eef0e0;
+    --hair: rgb(14 15 18 / 0.08);
+    --hair-2: rgb(14 15 18 / 0.08);
+    --chip: rgb(246 246 248 / 0.7);
+    --chip-stroke: rgb(14 15 18 / 0.08);
+    --note: #eeeef1;
+
+    --solid: #0e0f12;
+    --on-solid: #ffffff;
+    --ghost: #f6f6f8;
+    --ghost-stroke: rgb(14 15 18 / 0.08);
+    --ghost-2: #f6f6f8;
+    --nav: #f6f6f8;
+    --nav-stroke: rgb(14 15 18 / 0.12);
+    --wordmark: #0e0f12;
+
+    --blue: #2f5fe0;
+    --blue-line: #2f5fe0;
+    --cyan: #0a78b0;
+    --now: #a04c00;
+    --dot: #ffffff;
+    --dot-stroke: rgb(14 15 18 / 0.32);
+    --rail: rgb(14 15 18 / 0.12);
+    --award-bg: #fff1bf;
+    --award-stroke: #e2b84a;
+    --award-icon: #9a6b00;
+    --award-text: #4f3a00;
+    --phone-stroke: rgb(14 15 18 / 0.12);
+    --phone-shadow: 0 16px 40px rgb(14 15 18 / 0.12);
+    --island: rgb(246 246 248 / 0.8);
+    --tile-icon: rgb(14 15 18 / 0.04);
+    --spot: rgb(255 255 255 / 0.7);
+    --menu-active: rgb(14 15 18 / 0.06);
+    --toggle: rgb(14 15 18 / 0.04);
+    --toggle-active: #ffffff;
+    --toggle-active-stroke: rgb(14 15 18 / 0.08);
+
+    --bg-lock:
+      radial-gradient(55% 45% at 50% 62%, #f4bba4 0%, rgb(211 204 240 / 0.5) 40%, transparent 100%),
+      radial-gradient(45% 40% at 12% 10%, rgb(195 210 240 / 0.5), transparent 100%),
+      #ececef;
+    --bg-home:
+      radial-gradient(45% 40% at 85% 35%, rgb(191 227 216 / 0.4), transparent 100%),
+      radial-gradient(40% 35% at 10% 80%, rgb(214 206 242 / 0.4), transparent 100%),
+      #ececef;
+    --bg-settings: radial-gradient(60% 35% at 50% 100%, rgb(244 187 164 / 0.4), transparent 100%), #ececef;
+    --bg-feli: radial-gradient(65% 60% at 78% 100%, rgb(212 242 31 / 0.3), transparent 100%);
+    --bg-gov: radial-gradient(70% 55% at 20% 100%, rgb(58 123 242 / 0.15), transparent 100%);
+    --bg-cta:
+      radial-gradient(45% 60% at 92% 5%, rgb(244 187 164 / 0.4), transparent 100%),
+      radial-gradient(40% 45% at 0% 100%, rgb(157 176 232 / 0.2), transparent 100%);
+  }
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-inter-tight), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --color-os-bg: var(--os-bg);
+  --color-os-text: var(--os-text);
+  --color-os-text-2: var(--os-text-2);
+  --color-os-text-3: var(--os-text-3);
+  --color-glass: var(--glass);
+  --color-glass-stroke: var(--glass-stroke);
+  --color-card: var(--card);
+  --color-hair: var(--hair);
+  --color-hair-2: var(--hair-2);
+  --color-chip: var(--chip);
+  --color-chip-stroke: var(--chip-stroke);
+  --color-note: var(--note);
+  --color-solid: var(--solid);
+  --color-on-solid: var(--on-solid);
+  --color-ghost: var(--ghost);
+  --color-ghost-stroke: var(--ghost-stroke);
+  --color-ghost-2: var(--ghost-2);
+  --color-nav: var(--nav);
+  --color-nav-stroke: var(--nav-stroke);
+  --color-wordmark: var(--wordmark);
+  --color-blue: var(--blue);
+  --color-blue-line: var(--blue-line);
+  --color-cyan: var(--cyan);
+  --color-now: var(--now);
+  --color-now-bg: var(--now-bg);
+  --color-dot: var(--dot);
+  --color-dot-stroke: var(--dot-stroke);
+  --color-rail: var(--rail);
+  --color-award-bg: var(--award-bg);
+  --color-award-stroke: var(--award-stroke);
+  --color-award-icon: var(--award-icon);
+  --color-award-text: var(--award-text);
+  --color-island: var(--island);
+  --color-tile-icon: var(--tile-icon);
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
+@layer base {
+  html {
+    background: var(--os-bg);
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-os-bg font-sans text-os-text antialiased;
+    overflow-x: clip;
+  }
+
+  /* Sections land flush with the top: their own top padding already clears
+     the floating island. */
+  section[id] {
+    scroll-margin-top: 0;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  [tabindex="-1"]:focus {
+    outline: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Lenis drives the scroll position itself; native smoothing would fight it. */
+html.lenis {
+  scroll-behavior: auto;
+}
+
+/* Theme switch: scripts/theme.ts animates a circular clip on the new snapshot. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* ---------------------------------------------------------------------------
+   Shared surfaces
+--------------------------------------------------------------------------- */
+@layer components {
+  .wrap {
+    @apply mx-auto w-full max-w-[1200px] px-5 md:px-8 xl:px-0;
+  }
+
+  .glass {
+    background: var(--glass);
+    border: 1px solid var(--glass-stroke);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+  }
+
+  .eyebrow {
+    @apply text-[11px] font-semibold tracking-[2px] text-os-text-3 uppercase md:text-xs;
+  }
+
+  .section-title {
+    @apply font-display text-[32px] leading-[1.2] font-semibold tracking-[-0.6px] text-os-text md:text-[44px] md:tracking-[-1px];
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap select-none;
+    transition:
+      scale 0.45s var(--spring),
+      translate 0.3s var(--ease-out),
+      background-color 0.2s,
+      box-shadow 0.3s var(--ease-out);
+  }
+
+  .btn-solid {
+    @apply bg-solid text-on-solid;
+  }
+
+  .btn-ghost {
+    @apply border border-ghost-stroke bg-ghost text-os-text backdrop-blur-[20px];
+  }
+
+  .btn-ghost-2 {
+    @apply border border-hair-2 bg-ghost-2 text-os-text;
+  }
+
+  .chip {
+    @apply inline-flex rounded-full border border-chip-stroke bg-chip px-2.5 py-[5px] text-xs font-medium text-os-text-2;
+  }
+
+  .sr-only-live {
+    @apply sr-only;
+  }
+}
+
+/* Solid fallback where backdrop blur is unsupported. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: var(--card);
+  }
+}

@@ -1,0 +1,26 @@
+---
+// Eyebrow + h2 used at the top of each section. The h2 receives focus after
+// in-page navigation (see scripts/motion.ts), hence tabindex="-1".
+import Eyebrow from './Eyebrow.astro';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  id: string;
+  class?: string;
+  align?: 'start' | 'center-mobile';
+}
+
+const { eyebrow, title, id, class: className, align = 'center-mobile' } = Astro.props;
+---
+
+<div
+  class:list={[
+    'flex flex-col gap-2 md:gap-2.5',
+    align === 'center-mobile' && 'items-center text-center md:items-start md:text-left',
+    className,
+  ]}
+>
+  <Eyebrow>{eyebrow}</Eyebrow>
+  <h2 id={id} tabindex="-1" class="section-title">{title}</h2>
+</div>

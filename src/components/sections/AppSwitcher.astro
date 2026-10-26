@@ -1,0 +1,325 @@
+---
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import PhoneFrame from '../ui/PhoneFrame.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import { contact, mailto, projects } from '../../data/portfolio';
+
+const { felicash, govApps, quickAction } = projects;
+const fmt = new Intl.NumberFormat('en-US');
+// Desktop positions of the three phones inside the FeliCash card (design px).
+const phonePos = [
+  { x: 40, y: 52 },
+  { x: 270, y: 24 },
+  { x: 500, y: 80 },
+];
+const backdropBubbles = [
+  { x: 14, y: 20, w: 170, c: '#1F2C3A' },
+  { x: 14, y: 70, w: 120, c: '#1F2C3A' },
+  { x: 110, y: 380, w: 150, c: '#2B5278' },
+  { x: 14, y: 430, w: 190, c: '#1F2C3A' },
+];
+const reactions = [
+  { icon: 'thumbs-up', c: '#F5A524' },
+  { icon: 'heart', c: '#E5484D' },
+  { icon: 'laugh', c: '#F5A524' },
+  { icon: 'flame', c: '#F76B15' },
+  { icon: 'party-popper', c: '#B58CFF' },
+];
+const menu = [
+  { icon: 'reply', label: 'Reply' },
+  { icon: 'copy', label: 'Copy' },
+  { icon: 'forward', label: 'Forward' },
+  { icon: 'trash-2', label: 'Delete', danger: true },
+];
+const walkthrough = mailto(govApps.ctaSubject);
+---
+
+<section
+  id="work"
+  aria-labelledby="work-title"
+  class="relative flex flex-col bg-(--sec-2) py-20 lg:min-h-svh lg:py-[72px]"
+>
+  <div class="wrap flex flex-1 flex-col gap-10 lg:gap-9">
+    <div class="flex flex-col items-center md:flex-row md:items-end md:justify-between md:gap-12">
+      <SectionHeading id="work-title" eyebrow="Recent apps" title="Things I've built" />
+      <Button
+        href={contact.githubUrl}
+        external
+        variant="ghost-2"
+        size="sm"
+        icon="github"
+        iconEnd="arrow-up-right"
+        class="hidden bg-transparent px-4 py-2.5 md:inline-flex"
+      >
+        More on GitHub
+      </Button>
+    </div>
+
+    <div class="grid flex-1 gap-4 lg:grid-rows-[342fr_280fr] lg:gap-5" data-pop-group>
+      <!-- FeliCash -->
+      <article
+        class="pop card feli relative grid grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[28px] lg:min-h-[320px] lg:grid-cols-[480px_minmax(0,1fr)] lg:rounded-[36px]"
+        data-spotlight
+      >
+        <div class="flex flex-col justify-between gap-5 px-6 pt-6 pb-2 lg:gap-3 lg:py-6 lg:pr-0 lg:pl-10">
+          <div class="flex flex-col gap-[22px] lg:gap-3.5">
+            <header class="flex items-center gap-3.5">
+              <span
+                class="grid size-[46px] place-items-center rounded-xl border border-[#D4F21F55] bg-[#0B0B0B] text-[#D4F21F] lg:size-[52px] lg:rounded-[14px]"
+                aria-hidden="true"
+              >
+                <Icon name="wallet" size={26} />
+              </span>
+              <div class="flex flex-col gap-1">
+                <h3 class="font-display text-2xl leading-[1.2] font-bold tracking-[-0.5px] lg:text-[28px]">{felicash.name}</h3>
+                <p class="text-[11px] font-semibold tracking-[0.4px] text-os-text-3 lg:text-xs lg:tracking-[0.6px]">{felicash.meta}</p>
+              </div>
+            </header>
+            <p class="text-[15px] leading-[1.55] text-os-text-2">{felicash.description}</p>
+            <div class="flex items-center gap-3 rounded-[18px] border border-chip-stroke bg-chip px-4 py-3.5 lg:px-3.5 lg:py-2.5">
+              <span class="grid size-8 shrink-0 place-items-center rounded-full bg-[#D4F21F] text-[#0B0B0B]" aria-hidden="true">
+                <Icon name="mic" size={16} />
+              </span>
+              <p class="text-sm leading-[1.4] font-medium text-os-text"><span class="sr-only">Example voice input: </span>{felicash.prompt}</p>
+            </div>
+          </div>
+          <div class="flex flex-col items-start gap-5 lg:gap-3">
+            <ul class="flex flex-wrap gap-1.5" aria-label="Tech stack">
+              {felicash.stack.map((t) => <li class="chip">{t}</li>)}
+            </ul>
+            <Button href={felicash.url} external variant="lime" icon="github">View on GitHub</Button>
+          </div>
+        </div>
+
+        <div class="relative min-w-0 pb-6 lg:pb-0">
+          <ul class="phones" data-carousel aria-label="FeliCash screenshots" tabindex="0">
+            {
+              felicash.screens.map((s, i) => (
+                <li class="phone-slot" style={`--x:${phonePos[i].x}px;--y:${phonePos[i].y}px;--k:${i - 1}`} data-slide>
+                  <PhoneFrame src={s.src} alt={s.alt} />
+                </li>
+              ))
+            }
+          </ul>
+          <div class="flex justify-center gap-2 lg:hidden" data-dots>
+            {
+              felicash.screens.map((_, i) => (
+                <button
+                  type="button"
+                  class="dot size-2 rounded-full bg-os-text-3 transition-[width,background-color] duration-300"
+                  aria-label={`Show screenshot ${i + 1} of ${felicash.screens.length}`}
+                  aria-current={i === 0 ? 'true' : undefined}
+                  data-dot={i}
+                />
+              ))
+            }
+          </div>
+        </div>
+      </article>
+
+      <div class="grid gap-4 lg:grid-cols-2 lg:gap-6">
+        <!-- HCMC Gov Apps -->
+        <article
+          class="pop card gov flex flex-col justify-between gap-7 rounded-[28px] p-6 lg:gap-4 lg:rounded-[36px] lg:p-7"
+          style="--i:1"
+          data-spotlight
+        >
+          <div class="flex flex-col gap-[18px] lg:gap-3.5">
+            <div class="flex items-center justify-between gap-4">
+              <header class="flex min-w-0 items-center gap-3.5">
+                <span
+                  class="grid size-[46px] shrink-0 place-items-center rounded-xl bg-linear-to-b from-[#3A7BF2] to-[#1E4FBF] text-white lg:size-[52px] lg:rounded-[14px]"
+                  aria-hidden="true"
+                >
+                  <Icon name="landmark" size={26} />
+                </span>
+                <div class="flex flex-col gap-1">
+                  <h3 class="font-display text-2xl leading-[1.2] font-bold tracking-[-0.5px] lg:text-[28px]">{govApps.name}</h3>
+                  <p class="text-[11px] font-semibold tracking-[0.4px] text-os-text-3 lg:whitespace-nowrap lg:text-xs lg:tracking-[0.6px]">{govApps.meta}</p>
+                </div>
+              </header>
+              <a href={walkthrough} class="link-arrow hidden items-center gap-2 text-sm font-medium whitespace-nowrap text-blue xl:inline-flex">
+                <Icon name="message-circle" size={15} />
+                {govApps.cta}
+                <Icon name="arrow-up-right" size={14} class="arrow" />
+              </a>
+            </div>
+            <p class="text-[15px] leading-[1.55] text-os-text-2 lg:text-sm">{govApps.description}</p>
+          </div>
+          <div class="flex flex-col gap-7">
+            <dl class="grid gap-5 sm:grid-cols-2 sm:gap-4">
+              {
+                govApps.stats.map((s) => (
+                  <div class="flex flex-col-reverse gap-2 border-l-2 border-blue-line pl-4">
+                    <dt class="text-sm leading-[1.45] text-os-text-2">
+                      <span class="lg:hidden">{s.labelMobile}</span>
+                      <span class="hidden lg:inline">{s.label}</span>
+                    </dt>
+                    <dd class="font-display text-[44px] leading-none font-bold tracking-[-1.5px] tabular-nums">
+                      <span aria-hidden="true" data-count-to={s.value} data-suffix={s.suffix}>
+                        {fmt.format(s.value)}
+                        {s.suffix}
+                      </span>
+                      <span class="sr-only">
+                        {fmt.format(s.value)}
+                        {s.suffix}
+                      </span>
+                    </dd>
+                  </div>
+                ))
+              }
+            </dl>
+            <p class="flex items-center gap-3.5 rounded-[18px] border border-hair bg-note px-[18px] py-4 text-[13px] leading-[1.45] text-os-text-2 lg:hidden">
+              <Icon name="eye-off" size={18} class="text-os-text-3" />
+              {govApps.note}
+            </p>
+            <a href={walkthrough} class="link-arrow inline-flex items-center gap-2 self-start text-sm font-medium text-blue xl:hidden">
+              <Icon name="message-circle" size={15} />
+              {govApps.cta}
+              <Icon name="arrow-up-right" size={14} class="arrow" />
+            </a>
+          </div>
+        </article>
+
+        <!-- QuickAction -->
+        <article
+          class="pop card quick flex flex-col items-center gap-6 overflow-hidden rounded-[28px] px-6 pt-6 lg:flex-row lg:items-stretch lg:gap-5 lg:rounded-[36px] lg:pt-7 lg:pr-6 lg:pl-7"
+          style="--i:2"
+          data-spotlight
+        >
+          <div class="flex w-full flex-col gap-[18px] lg:w-[250px] lg:shrink-0 lg:gap-3 lg:pb-7">
+            <header class="flex items-center gap-3.5">
+              <span
+                class="grid size-[46px] shrink-0 place-items-center rounded-xl bg-linear-to-b from-[#4FA3FF] to-[#1E63E9] text-white lg:size-[52px] lg:rounded-[14px]"
+                aria-hidden="true"
+              >
+                <Icon name="message-square-more" size={26} />
+              </span>
+              <div class="flex flex-col gap-1">
+                <h3 class="font-display text-2xl leading-[1.2] font-bold tracking-[-0.5px] lg:text-[28px]">{quickAction.name}</h3>
+                <p class="text-[11px] font-semibold tracking-[0.4px] text-os-text-3 lg:whitespace-nowrap lg:text-xs lg:tracking-[0.6px]">
+                  {quickAction.meta}
+                </p>
+              </div>
+            </header>
+            <p class="text-[15px] leading-[1.55] text-os-text-2 lg:text-sm">{quickAction.description}</p>
+            <a
+              href={quickAction.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="link-arrow inline-flex items-center gap-2 self-start text-[13px] font-medium break-all text-cyan"
+            >
+              <Icon name="package" size={15} />
+              <span class="lg:hidden">{quickAction.urlLabelMobile}</span>
+              <span class="hidden lg:inline">{quickAction.urlLabel}</span>
+              <Icon name="arrow-up-right" size={14} class="arrow" />
+              <span class="sr-only">(opens in a new tab)</span>
+            </a>
+          </div>
+
+          <!-- Static illustration of the quick_action_menu package -->
+          <div class="relative h-[340px] w-[280px] shrink-0 lg:h-auto lg:w-auto lg:min-w-0 lg:flex-1" aria-hidden="true">
+            <div
+              class="absolute inset-x-0 top-0 h-[580px] overflow-hidden rounded-[40px] border border-white/10 bg-[#0E1621] text-white shadow-(--phone-shadow) lg:top-[-12px] lg:right-auto lg:left-1.5 lg:w-[260px]"
+            >
+              <div class="flex items-center justify-between px-[26px] pt-4 pb-2 text-[13px] font-semibold">
+                <span>9:41</span>
+                <span class="flex gap-[5px]">
+                  <Icon name="signal" size={13} /><Icon name="wifi" size={13} /><Icon name="battery-full" size={13} />
+                </span>
+              </div>
+              <div class="absolute inset-x-0 top-10 h-[520px] opacity-50 blur-[6px]">
+                {
+                  backdropBubbles.map((b) => (
+                    <span
+                      class="absolute h-9 rounded-2xl"
+                      style={`left:${b.x}px;top:${b.y}px;width:${b.w}px;background:${b.c}`}
+                    />
+                  ))
+                }
+              </div>
+              <div class="relative flex flex-col items-end gap-2 px-4 pt-7 lg:gap-1.5 lg:pt-0">
+                <div class="flex gap-[9px] rounded-full bg-[#1F2C3A] px-2.5 py-[7px]">
+                  {reactions.map((r) => <span style={`color:${r.c}`}><Icon name={r.icon} size={17} /></span>)}
+                </div>
+                <p class="rounded-[16px_16px_4px_16px] bg-[#2B5278] px-3 py-[9px] text-sm">Release build is up, test pls?</p>
+                <ul class="w-[170px] overflow-hidden rounded-xl bg-[#1F2C3AF2] text-[13px]">
+                  {
+                    menu.map((m, i) => (
+                      <li
+                        class:list={['flex items-center gap-2.5 px-3 py-[9px]', i > 0 && 'border-t border-white/[0.07]']}
+                        style={m.danger ? 'color:#FF6B6B' : undefined}
+                      >
+                        <Icon name={m.icon} size={14} />
+                        {m.label}
+                      </li>
+                    ))
+                  }
+                </ul>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .card {
+    background-color: var(--card);
+    border: 1px solid var(--hair);
+  }
+  .feli {
+    background: var(--bg-feli), var(--card-feli);
+  }
+  .gov {
+    background-image: var(--bg-gov);
+  }
+  .quick {
+    background-image: var(--bg-quick);
+  }
+
+  /* Phones: swipeable row below 1024px, fanned trio on desktop. */
+  .phones {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding: 16px calc(50% - 100px) 20px;
+    overscroll-behavior-x: contain;
+  }
+  .phones::-webkit-scrollbar {
+    display: none;
+  }
+  .phone-slot {
+    flex: 0 0 200px;
+    scroll-snap-align: center;
+  }
+
+  @media (min-width: 1024px) {
+    .phones {
+      position: absolute;
+      inset: 0;
+      display: block;
+      overflow: visible;
+      padding: 0;
+      scroll-snap-type: none;
+    }
+    .phone-slot {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      width: 220px;
+      translate: calc(var(--k) * var(--par, 0) * 18px) calc(var(--par, 0) * (var(--k) * var(--k) * -10px - 24px));
+      will-change: translate;
+    }
+  }
+
+  .dot[aria-current='true'] {
+    width: 20px;
+    background: var(--os-text);
+  }
+</style>

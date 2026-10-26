@@ -1,0 +1,104 @@
+---
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import { contact, findMe, mailto, profile } from '../../data/portfolio';
+
+const year = new Date().getFullYear();
+---
+
+<section
+  id="about"
+  aria-labelledby="about-title"
+  class="settings relative flex flex-col pt-[72px] pb-8 lg:min-h-svh lg:pb-9"
+>
+  <div class="wrap flex flex-1 flex-col gap-7 lg:gap-0">
+    <div class="hidden flex-1 lg:block" aria-hidden="true"></div>
+
+    <div
+      class="pop cta flex flex-col gap-8 rounded-[28px] border border-hair p-6 lg:gap-12 lg:rounded-[36px] lg:p-14 xl:flex-row xl:items-center xl:gap-16"
+    >
+      <div class="flex min-w-0 flex-1 flex-col gap-4 lg:gap-5">
+        <p class="flex items-center gap-2 text-xs font-semibold tracking-[2px] text-os-text-2 uppercase">
+          <span class="size-2 rounded-full bg-[#FF9F0A]" aria-hidden="true"></span>
+          About &amp; contact
+        </p>
+        <h2
+          id="about-title"
+          tabindex="-1"
+          class="font-display text-[38px] leading-[1.06] font-semibold tracking-[-1.2px] text-balance lg:text-[60px] lg:leading-[1.04] lg:tracking-[-2px]"
+        >
+          Let's build something people rely on.
+        </h2>
+        <p class="max-w-[520px] text-base leading-[1.55] text-os-text-2 lg:text-[17px]">{profile.pitch}</p>
+        <div class="flex flex-col items-stretch gap-4 pt-2 md:flex-row md:items-center md:gap-3 lg:pt-3">
+          <Button href={mailto()} size="lg" icon="mail" class="md:px-6 md:py-[15px]">Email me</Button>
+          <a
+            href={mailto()}
+            class="copy-email press inline-flex items-center gap-2 self-start rounded-full text-[15px] font-medium text-os-text-2 hover:text-os-text md:self-auto md:pl-3"
+            data-copy-email={contact.email}
+          >
+            <span>{contact.email}</span>
+            <Icon name="copy" size={15} class="text-os-text-3" />
+            <span class="sr-only">(activate to copy)</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3.5 lg:max-w-[460px] xl:w-[380px] xl:shrink-0">
+        <p class="text-[11px] font-semibold tracking-[1.6px] text-os-text-3">FIND ME</p>
+        <ul>
+          {
+            findMe.map((row) => {
+              const inner = (
+                <>
+                  <Icon name={row.icon} size={18} class="text-os-text-2" />
+                  <span class="w-[76px] shrink-0 text-sm text-os-text-3 lg:w-[84px]">{row.key}</span>
+                  <span class="min-w-0 flex-1 text-sm leading-[1.4] font-medium text-os-text lg:text-[15px]">{row.value}</span>
+                  {row.action && <Icon name={row.action} size={15} class="arrow text-os-text-3" />}
+                </>
+              );
+              return (
+                <li class="border-t border-hair">
+                  {row.href ? (
+                    <a
+                      href={row.href}
+                      class="link-arrow flex items-center gap-3.5 py-3.5"
+                      {...(row.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    >
+                      {inner}
+                      {row.external && <span class="sr-only">(opens in a new tab)</span>}
+                    </a>
+                  ) : (
+                    <div class="flex items-start gap-3.5 py-3.5">{inner}</div>
+                  )}
+                </li>
+              );
+            })
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="hidden flex-1 lg:block" aria-hidden="true"></div>
+
+    <footer class="flex flex-col items-start gap-4 border-t border-hair pt-6 md:flex-row md:items-center md:justify-between">
+      <p class="text-[13px] leading-normal text-os-text-3">© {year} {profile.name} · Designed and built in TuanOS 4.2</p>
+      <a
+        href="#top"
+        class="press inline-flex items-center gap-1.5 rounded-full border border-nav-stroke px-3.5 py-2 text-[13px] font-medium text-os-text-2 hover:text-os-text"
+      >
+        <Icon name="arrow-up" size={14} />
+        Back to top
+      </a>
+    </footer>
+  </div>
+</section>
+
+<style>
+  .settings {
+    background: var(--bg-settings);
+  }
+  .cta {
+    background: var(--bg-cta), var(--card);
+  }
+</style>

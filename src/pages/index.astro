@@ -1,9 +1,16 @@
 ---
+import AppSwitcher from '../components/sections/AppSwitcher.astro';
+import HomeScreen from '../components/sections/HomeScreen.astro';
+import LockScreen from '../components/sections/LockScreen.astro';
+import Settings from '../components/sections/Settings.astro';
+import VersionHistory from '../components/sections/VersionHistory.astro';
 import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-	<main class="grid min-h-screen place-items-center">
-		<h1 class="text-6xl font-bold tracking-tight">Tuan.</h1>
-	</main>
+	<LockScreen />
+	<HomeScreen />
+	<AppSwitcher />
+	<VersionHistory />
+	<Settings />
 </Layout>

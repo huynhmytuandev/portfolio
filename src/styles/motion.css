@@ -1,0 +1,214 @@
+/* ---------------------------------------------------------------------------
+   Interaction & motion. Scroll-linked values (--unlock, --fill, --par) and
+   state attributes are written by scripts/motion.ts; everything here only
+   animates transform, opacity and filter so nothing shifts layout.
+--------------------------------------------------------------------------- */
+
+/* Press feedback (touch + mouse) */
+.press {
+  transition:
+    scale 0.45s var(--spring),
+    translate 0.3s var(--ease-out),
+    background-color 0.2s,
+    color 0.2s;
+}
+.press:active {
+  scale: 0.97;
+  transition-duration: 0.08s;
+}
+
+/* Section card base for the spotlight layer */
+.card,
+[data-spotlight] {
+  position: relative;
+}
+
+/* Hover effects only where hover is real (no sticky hover on touch). */
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover {
+    translate: 0 -1px;
+  }
+
+  [data-spotlight] {
+    transition: translate 0.4s var(--ease-out);
+  }
+  [data-spotlight]:hover {
+    translate: 0 -3px;
+  }
+  [data-spotlight]::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), var(--spot), transparent 70%);
+    transition: opacity 0.3s ease;
+  }
+  [data-spotlight]:hover::before {
+    opacity: 1;
+  }
+
+  .tile {
+    transition:
+      background-color 0.25s ease,
+      scale 0.45s var(--spring);
+  }
+  .tile:hover {
+    background-color: var(--tile-icon);
+  }
+  .tile :where(.tile-icon) {
+    transform: perspective(300px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition:
+      transform 0.25s var(--ease-out),
+      rotate 0.5s var(--spring),
+      scale 0.5s var(--spring);
+  }
+  .tile:hover :where(.tile-icon) {
+    rotate: -8deg;
+    scale: 1.08;
+  }
+
+  .link-arrow :where(.arrow) {
+    transition: translate 0.3s var(--ease-out);
+  }
+  .link-arrow:hover :where(.arrow) {
+    translate: 2px -2px;
+  }
+}
+
+/* Timeline dots light up as the progress line reaches them */
+.tl-dot.is-lit:not(.is-current) {
+  background: rgb(255 159 10 / 0.85);
+  box-shadow: 0 0 0 2px rgb(255 159 10 / 0.3);
+}
+.tl-dot.is-current::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  border: 2px solid rgb(255 159 10 / 0.6);
+  opacity: 0;
+}
+
+/* Stack "edit mode" */
+[data-stack][data-editing='true'] [data-stack-meta] {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Full motion — only when the visitor has not asked for reduced motion.
+-------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  /* Lock Screen "unlock" */
+  .js [data-lock] .lock-bg {
+    translate: 0 calc(var(--unlock, 0) * -12%);
+    scale: calc(1 + var(--unlock, 0) * 0.25);
+    opacity: calc(1 - var(--unlock, 0) * 0.6);
+    will-change: translate, scale, opacity;
+  }
+  .js [data-lock] .lock-name {
+    scale: calc(1 + var(--unlock, 0) * 0.14);
+    opacity: calc(1 - var(--unlock, 0) * 1.6);
+    filter: blur(calc(var(--unlock, 0) * 8px));
+    will-change: scale, opacity, filter;
+  }
+  .js [data-lock] .lock-content > :not(.lock-name) {
+    translate: 0 calc(var(--unlock, 0) * -90px);
+    opacity: calc(1 - var(--unlock, 0) * 2);
+  }
+
+  /* Scroll cue nudge */
+  .cue-chevron {
+    animation: nudge 1.6s var(--ease-out) infinite;
+  }
+  .scroll-cue {
+    transition: opacity 0.3s ease;
+  }
+
+  /* App-launch entrance */
+  .js .pop {
+    transition:
+      opacity 0.5s var(--ease-out) calc(var(--i, 0) * 60ms),
+      scale 0.8s var(--spring) calc(var(--i, 0) * 60ms),
+      translate 0.4s var(--ease-out);
+  }
+  .js .pop:not(.is-in) {
+    opacity: 0;
+    scale: 0.92;
+  }
+  /* Timeline rows slide instead of scaling so they stay aligned with the
+     progress line, which lives outside the rows. */
+  .js .pop.pop-slide:not(.is-in) {
+    scale: 1;
+    translate: 0 18px;
+  }
+  .js .pop.is-done {
+    transition:
+      opacity 0.3s ease,
+      scale 0.45s var(--spring),
+      translate 0.4s var(--ease-out);
+  }
+
+  /* Current job pulse */
+  .tl-dot.is-current::after {
+    animation: pulse 2.2s var(--ease-out) infinite;
+  }
+
+  /* Jiggle */
+  [data-stack][data-editing='true'] .tile {
+    animation: jiggle 0.28s ease-in-out infinite alternate;
+    animation-delay: calc(var(--j, 0) * -71ms);
+  }
+
+  /* Timeline progress line */
+  .fill-line {
+    transition: scale 0.15s linear;
+  }
+}
+
+/* Reduced motion: instant state changes, opacity fades only. */
+@media (prefers-reduced-motion: reduce) {
+  .press:active {
+    scale: 1;
+  }
+  .island-wrap {
+    translate: 0 0 !important;
+    transition: opacity 0.2s ease !important;
+  }
+}
+
+.scroll-cue[data-hidden='true'] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes nudge {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 5px;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.9;
+    scale: 0.8;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.9;
+  }
+}
+
+@keyframes jiggle {
+  from {
+    rotate: -1.6deg;
+  }
+  to {
+    rotate: 1.6deg;
+  }
+}

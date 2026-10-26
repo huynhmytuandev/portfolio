@@ -1,4 +1,9 @@
 ---
+import { Font } from 'astro:assets';
+
+import Banner from '../components/Banner.astro';
+import Island from '../components/Island.astro';
+import { contact, profile } from '../data/portfolio';
 import '../styles/global.css';
 
 interface Props {
@@ -6,21 +11,72 @@ interface Props {
 	description?: string;
 }
 
-const { title = 'Tuan Huynh', description = 'Portfolio of Tuan Huynh' } = Astro.props;
+const {
+	title = `${profile.name} — ${profile.role}`,
+	description = `${profile.name} is a mobile developer in ${profile.location} building Flutter and .NET apps people rely on every day, from government platforms to open-source Flutter packages.`,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? contact.siteUrl).href;
+const ogImage = new URL('/og.png', Astro.site ?? contact.siteUrl).href;
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<meta name="description" content={description} />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<script is:inline>
+			(() => {
+				const root = document.documentElement;
+				root.classList.add('js');
+				try {
+					const theme = localStorage.getItem('theme');
+					if (theme === 'light' || theme === 'dark') root.dataset.theme = theme;
+				} catch {}
+			})();
+		</script>
 		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical} />
+		<meta name="theme-color" content="#0A0B10" media="(prefers-color-scheme: dark)" />
+		<meta name="theme-color" content="#ECECEF" media="(prefers-color-scheme: light)" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" sizes="32x32" />
+		<meta name="generator" content={Astro.generator} />
+
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="huynhmytuan.dev" />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content="Tuan. — Mobile Developer · Ho Chi Minh City" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
+
+		<Font cssVariable="--font-inter" preload={[{ subset: 'latin' }]} />
+		<Font cssVariable="--font-inter-tight" preload={[{ subset: 'latin' }]} />
 	</head>
-	<body class="min-h-screen bg-neutral-950 text-neutral-100 antialiased">
-		<slot />
+	<body>
+		<a
+			href="#intro"
+			class="sr-only z-[100] rounded-full bg-solid px-4 py-2 text-sm font-semibold text-on-solid focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+		>
+			Skip to content
+		</a>
+		<Island />
+		<main id="main" tabindex="-1">
+			<slot />
+		</main>
+		<Banner />
+		<script>
+			import '../scripts/theme.ts';
+			import '../scripts/smooth.ts';
+			import '../scripts/motion.ts';
+		</script>
 	</body>
 </html>

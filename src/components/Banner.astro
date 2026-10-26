@@ -1,0 +1,57 @@
+---
+// iOS-style notification banner. scripts/motion.ts calls showBanner().
+import Icon from './ui/Icon.astro';
+---
+
+<div class="banner-wrap" data-banner-wrap>
+  <div class="banner" data-banner data-show="false" aria-hidden="true">
+    <span class="grid size-9 shrink-0 place-items-center rounded-[10px] bg-[#2FB36A] text-white">
+      <Icon name="check" size={18} strokeWidth={2.5} />
+    </span>
+    <span class="flex flex-col">
+      <span class="text-[13px] font-semibold text-os-text">TuanOS</span>
+      <span class="text-sm text-os-text-2" data-banner-text>Email copied</span>
+    </span>
+  </div>
+  <p class="sr-only" role="status" aria-live="polite" data-banner-live></p>
+</div>
+
+<style>
+  .banner-wrap {
+    position: fixed;
+    inset: max(10px, env(safe-area-inset-top)) 0 auto;
+    z-index: 60;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    padding-inline: 16px;
+  }
+  .banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: min(360px, 100%);
+    padding: 10px 14px 10px 10px;
+    border-radius: 22px;
+    background: var(--island);
+    border: 1px solid var(--nav-stroke);
+    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+    backdrop-filter: blur(24px) saturate(1.6);
+    box-shadow: 0 14px 40px rgb(0 0 0 / 0.3);
+    translate: 0 -160%;
+    opacity: 0;
+    transition:
+      translate 0.55s var(--spring),
+      opacity 0.25s ease;
+  }
+  .banner[data-show='true'] {
+    translate: 0 0;
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .banner {
+      translate: 0 0;
+      transition: opacity 0.2s ease;
+    }
+  }
+</style>

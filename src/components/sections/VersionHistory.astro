@@ -1,0 +1,128 @@
+---
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import { jobs, resumePath } from '../../data/portfolio';
+import { formatRange, tenureLabel } from '../../lib/time';
+---
+
+<section
+  id="experience"
+  aria-labelledby="experience-title"
+  class="relative flex flex-col bg-(--sec) pt-20 pb-16 lg:min-h-svh lg:py-[72px]"
+>
+  <div class="wrap flex flex-1 flex-col gap-9">
+    <div class="flex flex-col items-center md:flex-row md:items-end md:justify-between md:gap-12">
+      <SectionHeading id="experience-title" eyebrow="Experience" title="How I got here" />
+      <Button
+        href={resumePath}
+        variant="ghost-2"
+        size="sm"
+        icon="file-down"
+        class="hidden px-[18px] py-3 md:inline-flex"
+        target="_blank"
+        rel="noopener"
+      >
+        Download résumé<span class="sr-only">(opens in a new tab)</span>
+      </Button>
+    </div>
+
+    <div
+      class="track relative rounded-[28px] border border-hair bg-card py-1 pr-5 pl-4 lg:rounded-[36px] lg:px-12 lg:py-3"
+      data-timeline
+    >
+      <span class="fill-line" aria-hidden="true"></span>
+      <ol class="relative">
+        {
+          jobs.map((job, i) => {
+            const current = !job.end;
+            const first = i === 0;
+            const last = i === jobs.length - 1;
+            const range = formatRange(job.start, job.end);
+            const tenure = tenureLabel(job.start, job.end);
+            const tenureAttr = current ? job.start : undefined;
+            return (
+              <li class="pop pop-slide flex gap-3.5 lg:gap-8" style={`--i:${i}`}>
+                <p class="hidden w-[200px] shrink-0 flex-col gap-1 pt-[31px] lg:flex">
+                  <span class:list={['text-[15px] font-semibold', current ? 'text-now' : 'text-os-text-2']}>{range}</span>
+                  <span class="text-[13px] text-os-text-3" data-tenure={tenureAttr}>{tenure}</span>
+                </p>
+                <div
+                  class:list={['flex w-4 shrink-0 flex-col items-center gap-2', first && 'pt-[29px] lg:pt-[34px]']}
+                  aria-hidden="true"
+                >
+                  {!first && <span class="h-5 w-0.5 bg-rail lg:h-[26px]" />}
+                  <span class:list={['tl-dot', current && 'is-current']} data-tl-dot />
+                  {!last && <span class="w-0.5 flex-1 bg-rail" />}
+                </div>
+                <div class="flex min-w-0 flex-1 flex-col gap-1.5 pt-[26px] pb-7 lg:pt-7 lg:pb-8">
+                  <p class="flex items-center gap-2 pb-1.5 lg:hidden">
+                    <span class:list={['text-[13px] font-semibold', current ? 'text-now' : 'text-os-text-2']}>{range}</span>
+                    <span class="text-xs text-os-text-3" data-tenure={tenureAttr}>{tenure}</span>
+                  </p>
+                  <h3 class="flex items-center gap-2.5 font-display text-2xl leading-[1.2] font-bold">
+                    {job.company}
+                    {current && (
+                      <span class="rounded-full bg-now-bg px-[9px] py-[3px] font-sans text-[11px] font-bold tracking-[0.8px] text-now">
+                        NOW
+                      </span>
+                    )}
+                  </h3>
+                  <p class="text-[15px] font-medium text-os-text-2">{job.title}</p>
+                  <p class="pt-1.5 text-sm leading-[1.55] text-os-text-3">{job.description}</p>
+                  {job.awards && (
+                    <ul class="flex flex-col items-start gap-2 pt-2 md:flex-row md:flex-wrap" aria-label="Awards">
+                      {job.awards.map((a) => (
+                        <li class="flex items-center gap-[7px] rounded-full border border-award-stroke bg-award-bg px-3 py-1.5 text-xs font-medium text-award-text">
+                          <Icon name="trophy" size={13} class="text-award-icon" />
+                          {a}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .tl-dot {
+    position: relative;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background: var(--dot);
+    box-shadow: 0 0 0 2px var(--dot-stroke);
+    transition:
+      background-color 0.4s var(--ease-out),
+      box-shadow 0.4s var(--ease-out);
+  }
+  .tl-dot.is-current {
+    background: #ff9f0a;
+    box-shadow: 0 0 0 4px rgb(255 159 10 / 0.33);
+  }
+
+  /* Scroll-progress line, positioned over the rails by scripts/motion.ts. */
+  .fill-line {
+    position: absolute;
+    left: calc(var(--rail-x, 23px));
+    top: var(--fill-top, 0);
+    width: 2px;
+    height: var(--fill-h, 0);
+    border-radius: 2px;
+    background: linear-gradient(#ff9f0a, rgb(255 159 10 / 0.35));
+    transform-origin: top;
+    scale: 1 var(--fill, 1);
+    pointer-events: none;
+    z-index: 1;
+  }
+  :global(html:not(.js)) .fill-line {
+    display: none;
+  }
+</style>

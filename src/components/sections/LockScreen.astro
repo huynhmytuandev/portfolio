@@ -1,0 +1,91 @@
+---
+import ThemeToggle from '../ThemeToggle.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import { contact, mailto, profile } from '../../data/portfolio';
+
+const navLinks = [
+  { label: 'Work', href: '#work' },
+  { label: 'Experience', href: '#experience' },
+  { label: 'About', href: '#about' },
+];
+---
+
+<section
+  id="top"
+  aria-labelledby="hero-title"
+  class="lock relative isolate flex min-h-svh flex-col overflow-hidden bg-(--sec)"
+  data-lock
+>
+  <div class="lock-bg pointer-events-none absolute -inset-[8%] -z-10" aria-hidden="true"></div>
+
+  <header class="wrap relative z-10 grid grid-cols-[1fr_auto] items-center pt-4 md:grid-cols-[1fr_auto_1fr] md:pt-5" data-statusbar>
+    <a href="#top" class="text-sm font-semibold text-os-text md:text-[15px]">{contact.siteUrl.replace('https://', '')}</a>
+    <nav aria-label="Primary" class="hero-nav hidden md:block" data-hero-nav>
+      <ul class="flex items-center gap-1.5 rounded-full border border-nav-stroke bg-nav p-1 backdrop-blur-[20px]">
+        {
+          navLinks.map((l) => (
+            <li>
+              <a
+                href={l.href}
+                class="press block rounded-full px-3.5 py-[7px] text-sm font-medium text-os-text-2 transition-colors hover:bg-ghost hover:text-os-text"
+              >
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="flex items-center justify-end gap-2.5">
+      <ThemeToggle />
+      <Button href="#about" size="nav" iconEnd="arrow-up-right" class="max-[359px]:hidden">
+        <span class="hidden md:inline">Get in touch</span><span class="md:hidden">Contact</span>
+      </Button>
+    </div>
+  </header>
+
+  <div id="intro" tabindex="-1" class="wrap flex flex-1 flex-col items-center justify-center py-16 text-center md:py-20">
+    <div class="lock-content flex flex-col items-center" data-unlock-content>
+      <p class="flex items-center gap-2 text-[15px] font-semibold text-os-text-2 md:text-[22px]">
+        <Icon name="lock-open" size={16} />
+        <span>{profile.role}&nbsp;&nbsp;·&nbsp;&nbsp;{profile.location}</span>
+      </p>
+      <h1 id="hero-title" class="lock-name font-display font-bold text-wordmark">
+        <span aria-hidden="true">{profile.shortName}.</span>
+        <span class="sr-only">{profile.name} — {profile.role} in {profile.location}</span>
+      </h1>
+      <p class="max-w-[22rem] text-base leading-[1.45] text-os-text-2 md:max-w-none md:text-lg">{profile.tagline}</p>
+      <div class="lock-actions flex w-full max-w-[350px] gap-2.5 pt-8 md:w-auto md:max-w-none md:gap-3 md:pt-9">
+        <Button href="#work" size="lg" iconEnd="arrow-down" class="flex-1 md:flex-none">See my work</Button>
+        <Button href={mailto()} variant="ghost" size="lg" icon="mail" class="flex-1 md:flex-none">Email me</Button>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex justify-center pb-6 md:pb-7">
+    <a href="#glance" class="scroll-cue flex flex-col items-center gap-1.5 text-[13px] font-medium text-os-text-3" data-scroll-cue>
+      <span>Scroll to explore</span>
+      <Icon name="chevron-down" size={18} class="cue-chevron" />
+    </a>
+  </div>
+</section>
+
+<style>
+  .lock-bg {
+    background: var(--bg-lock);
+  }
+
+  /* With JS the floating island takes over this pill in place (same size and
+     position) and morphs from it, so the original only reserves the space. */
+  :global(html.js) .hero-nav {
+    visibility: hidden;
+  }
+
+  .lock-name {
+    font-size: clamp(96px, 15.3vw, 220px);
+    line-height: 1;
+    letter-spacing: -0.037em;
+    padding-block: 0.06em 0.02em;
+  }
+</style>

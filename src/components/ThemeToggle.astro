@@ -1,0 +1,112 @@
+---
+// Light / Dark / System switcher from the status bar design. The active state
+// is derived from <html data-theme> in CSS, so it is right on first paint;
+// scripts/theme.ts handles clicks and aria-pressed.
+import Icon from './ui/Icon.astro';
+
+const options = [
+  { value: 'light', label: 'Light theme', icon: 'sun' },
+  { value: 'dark', label: 'Dark theme', icon: 'moon' },
+  { value: 'system', label: 'Use system theme', icon: 'monitor' },
+];
+---
+
+<div class="theme-toggle" role="group" aria-label="Theme" data-theme-toggle>
+  <span class="theme-thumb" aria-hidden="true"></span>
+  {
+    options.map((o) => (
+      <button type="button" class="theme-opt" data-theme-value={o.value} aria-label={o.label} aria-pressed="false" title={o.label}>
+        <Icon name={o.icon} size={16} class="theme-icon" />
+      </button>
+    ))
+  }
+</div>
+
+<style>
+  .theme-toggle {
+    --size: 26px;
+    --icon: 14px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 999px;
+    background: var(--toggle);
+    border: 1px solid var(--nav-stroke);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+  }
+  @media (min-width: 768px) {
+    .theme-toggle {
+      --size: 30px;
+      --icon: 16px;
+    }
+  }
+  :global(html:not(.js)) .theme-toggle {
+    display: none;
+  }
+
+  .theme-opt {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 999px;
+    color: var(--os-text-3);
+    transition:
+      color 0.25s ease,
+      scale 0.45s var(--spring);
+  }
+  .theme-opt:hover {
+    color: var(--os-text-2);
+  }
+  .theme-opt:active {
+    scale: 0.9;
+  }
+  .theme-opt :global(.theme-icon) {
+    width: var(--icon);
+    height: var(--icon);
+    transition: rotate 0.5s var(--spring);
+  }
+
+  /* Sliding thumb behind the active option. --idx: 0 light, 1 dark, 2 system. */
+  .theme-thumb {
+    --idx: 2;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 999px;
+    background: var(--toggle-active);
+    box-shadow: inset 0 0 0 1px var(--toggle-active-stroke);
+    translate: calc(var(--idx) * (var(--size) + 2px)) 0;
+    transition: translate 0.45s var(--spring);
+  }
+  :global(html[data-theme='light']) .theme-thumb {
+    --idx: 0;
+  }
+  :global(html[data-theme='dark']) .theme-thumb {
+    --idx: 1;
+  }
+
+  :global(html[data-theme='light']) .theme-opt[data-theme-value='light'],
+  :global(html[data-theme='dark']) .theme-opt[data-theme-value='dark'],
+  :global(html:not([data-theme])) .theme-opt[data-theme-value='system'] {
+    color: var(--os-text);
+  }
+  :global(html[data-theme='light']) .theme-opt[data-theme-value='light'] :global(.theme-icon),
+  :global(html[data-theme='dark']) .theme-opt[data-theme-value='dark'] :global(.theme-icon) {
+    rotate: 360deg;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .theme-thumb,
+    .theme-opt :global(.theme-icon) {
+      transition: none;
+    }
+  }
+</style>
